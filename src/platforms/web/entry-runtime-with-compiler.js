@@ -70,7 +70,9 @@ Vue.prototype.$mount = function (
         comments: options.comments
       }, this)
       options.render = render
+      console.log('render: ', render);
       options.staticRenderFns = staticRenderFns
+      console.log('staticRenderFns: ', staticRenderFns);
 
       /* istanbul ignore if */
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {

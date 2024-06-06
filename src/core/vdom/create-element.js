@@ -61,7 +61,7 @@ export function _createElement (
   }
   // object syntax in v-bind
   if (isDef(data) && isDef(data.is)) {
-    tag = data.is
+    tag = data.is 
   }
   if (!tag) {
     // in case of component :is set to falsy value

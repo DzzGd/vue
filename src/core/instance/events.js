@@ -141,3 +141,5 @@ export function eventsMixin (Vue: Class<Component>) {
     return vm
   }
 }
+
+

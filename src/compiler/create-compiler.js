@@ -3,13 +3,22 @@
 import { extend } from 'shared/util'
 import { detectErrors } from './error-detector'
 import { createCompileToFunctionFn } from './to-function'
+import { cloneDeep } from 'lodash';
 
-export function createCompilerCreator (baseCompile: Function): Function {
-  return function createCompiler (baseOptions: CompilerOptions) {
-    function compile (
+/**
+ * 编译器构建函数的构建器
+ * 返回编译器构建函数
+ **/
+export function createCompilerCreator(baseCompile: Function): Function {
+
+
+  // 译器构建函数
+  return function createCompiler(baseOptions: CompilerOptions) {
+    function compile(
       template: string,
       options?: CompilerOptions
     ): CompiledResult {
+      console.log(window.number++, 'createCompiler', 'baseOptions', cloneDeep(baseOptions));
       const finalOptions = Object.create(baseOptions)
       const errors = []
       const tips = []
@@ -56,13 +65,16 @@ export function createCompilerCreator (baseCompile: Function): Function {
         }
       }
 
+      // 添加警告功能
       finalOptions.warn = warn
 
       const compiled = baseCompile(template.trim(), finalOptions)
       if (process.env.NODE_ENV !== 'production') {
         detectErrors(compiled.ast, warn)
       }
+      // 添加错误提示
       compiled.errors = errors
+      // 添加提示
       compiled.tips = tips
       return compiled
     }

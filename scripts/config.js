@@ -17,10 +17,10 @@ const banner =
   ' */'
 
 const weexFactoryPlugin = {
-  intro () {
+  intro() {
     return 'module.exports = function weexFactory (exports, document) {'
   },
-  outro () {
+  outro() {
     return '}'
   }
 }
@@ -126,7 +126,11 @@ const builds = {
     format: 'umd',
     env: 'development',
     alias: { he: './entity-decoder' },
-    banner
+    banner,
+    external: ['lodash'],
+    globals: {
+      lodash: '_'
+    },
   },
   // Runtime+compiler production build  (Browser)
   'web-full-prod': {
@@ -212,8 +216,8 @@ const builds = {
     external: Object.keys(require('../packages/weex-template-compiler/package.json').dependencies)
   }
 }
-
-function genConfig (name) {
+function genConfig(name) {
+  console.log('name: ', name);
   const opts = builds[name]
   const config = {
     input: opts.entry,

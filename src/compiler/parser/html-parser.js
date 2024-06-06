@@ -15,12 +15,12 @@ import { unicodeRegExp } from 'core/util/lang'
 
 // Regular Expressions for parsing tags and attributes
 const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
-const dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+?\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
+const dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+?\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/ // v-bind:name="dz" v-bind:[name]="dz" 
 const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z${unicodeRegExp.source}]*`
-const qnameCapture = `((?:${ncname}\\:)?${ncname})`
+const qnameCapture = `((?:${ncname}\\:)?${ncname})` // '_underscorePrefixed:element'
 const startTagOpen = new RegExp(`^<${qnameCapture}`)
-const startTagClose = /^\s*(\/?)>/
-const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`)
+const startTagClose = /^\s*(\/?)>/  // <img />
+const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`) // </qnameCapture>
 const doctype = /^<!DOCTYPE [^>]+>/i
 // #7298: escape - to avoid being passed as HTML comment when inlined in page
 const comment = /^<!\--/
@@ -46,14 +46,22 @@ const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g
 const isIgnoreNewlineTag = makeMap('pre,textarea', true)
 const shouldIgnoreFirstNewline = (tag, html) => tag && isIgnoreNewlineTag(tag) && html[0] === '\n'
 
-function decodeAttr (value, shouldDecodeNewlines) {
+function decodeAttr(value, shouldDecodeNewlines) {
   const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr
-  return value.replace(re, match => decodingMap[match])
+  return value.replace(re, match => {
+    window['console']['warn']('todo: encodedAttr', match)
+    return decodingMap[match];
+  })
 }
 
-export function parseHTML (html, options) {
+export function parseHTML(html, options) {
+  console.log(window.number++, 'parseHTML html:', html);
   const stack = []
+
+  //指示系统对输入内容是否包含HTML标记的预期
   const expectHTML = options.expectHTML
+
+  //判断给定的HTML标签是否被视为一元标签
   const isUnaryTag = options.isUnaryTag || no
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
   let index = 0
@@ -95,6 +103,7 @@ export function parseHTML (html, options) {
         }
 
         // End tag:
+        // 结束标签 </div>
         const endTagMatch = html.match(endTag)
         if (endTagMatch) {
           const curIndex = index
@@ -113,10 +122,11 @@ export function parseHTML (html, options) {
           continue
         }
       }
-
       let text, rest, next
+      // <script>asdasd</script>
       if (textEnd >= 0) {
-        rest = html.slice(textEnd)
+        // {{message}} <span></span> </div>
+        rest = html.slice(textEnd) // <span></span> </div>
         while (
           !endTag.test(rest) &&
           !startTagOpen.test(rest) &&
@@ -179,29 +189,33 @@ export function parseHTML (html, options) {
   // Clean up any remaining tags
   parseEndTag()
 
-  function advance (n) {
+  function advance(n) {
     index += n
     html = html.substring(n)
   }
 
-  function parseStartTag () {
+
+  // 解析开始标签,获取标签名称, 属性, 标签起止索引
+  function parseStartTag() {
     const start = html.match(startTagOpen)
     if (start) {
       const match = {
-        tagName: start[1],
+        tagName: start[1], // 标签名
         attrs: [],
-        start: index
+        start: index // 开始于索引
       }
-      advance(start[0].length)
+      advance(start[0].length) // 裁剪开始标签
       let end, attr
       while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
+        // 存在标签属性 v-modal 或者 class style
         attr.start = index
         advance(attr[0].length)
         attr.end = index
         match.attrs.push(attr)
       }
       if (end) {
-        match.unarySlash = end[1]
+
+        match.unarySlash = end[1] // 开始标签的结尾: 可能是 /> 结束标签 
         advance(end[0].length)
         match.end = index
         return match
@@ -209,7 +223,9 @@ export function parseHTML (html, options) {
     }
   }
 
-  function handleStartTag (match) {
+
+  // 处理开始标签 <div>, 替换当前标签
+  function handleStartTag(match) {
     const tagName = match.tagName
     const unarySlash = match.unarySlash
 
@@ -226,6 +242,8 @@ export function parseHTML (html, options) {
 
     const l = match.attrs.length
     const attrs = new Array(l)
+
+    // 循环attrs 处理特殊字符(换行符等)
     for (let i = 0; i < l; i++) {
       const args = match.attrs[i]
       const value = args[3] || args[4] || args[5] || ''
@@ -252,7 +270,7 @@ export function parseHTML (html, options) {
     }
   }
 
-  function parseEndTag (tagName, start, end) {
+  function parseEndTag(tagName, start, end) {
     let pos, lowerCasedTagName
     if (start == null) start = index
     if (end == null) end = index

@@ -73,6 +73,7 @@ export function createPatchFunction (backend) {
 
   const { modules, nodeOps } = backend
 
+  /*构建cbs回调函数，web平台上见/platforms/web/runtime/modules*/
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = []
     for (j = 0; j < modules.length; ++j) {
@@ -140,7 +141,9 @@ export function createPatchFunction (backend) {
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
 
+    /*insertedVnodeQueue为空数组[]的时候isRootInsert标志为true*/
     vnode.isRootInsert = !nested // for transition enter check
+    /*创建一个组件节点*/
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -173,7 +176,7 @@ export function createPatchFunction (backend) {
         // in Weex, the default insertion order is parent-first.
         // List items can be optimized to use children-first insertion
         // with append="tree".
-        const appendAsTree = isDef(data) && isTrue(data.appendAsTree)
+       /*  const appendAsTree = isDef(data) && isTrue(data.appendAsTree)
         if (!appendAsTree) {
           if (isDef(data)) {
             invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -186,7 +189,7 @@ export function createPatchFunction (backend) {
             invokeCreateHooks(vnode, insertedVnodeQueue)
           }
           insert(parentElm, vnode.elm, refElm)
-        }
+        } */
       } else {
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
@@ -207,6 +210,7 @@ export function createPatchFunction (backend) {
     }
   }
 
+  /*创建一个组件*/
   function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
     if (isDef(i)) {
@@ -315,6 +319,7 @@ export function createPatchFunction (backend) {
   // set scope id attribute for scoped CSS.
   // this is implemented as a special case to avoid the overhead
   // of going through the normal attribute patching process.
+  /*为scoped CSS 设置scoped id*/
   function setScope (vnode) {
     let i
     if (isDef(i = vnode.fnScopeId)) {
@@ -421,6 +426,7 @@ export function createPatchFunction (backend) {
       checkDuplicateKeys(newCh)
     }
 
+    // diff 算法
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
       if (isUndef(oldStartVnode)) {
         oldStartVnode = oldCh[++oldStartIdx] // Vnode has been moved left
@@ -698,6 +704,7 @@ export function createPatchFunction (backend) {
   }
 
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
+    /*vnode不存在则直接调用销毁钩子*/
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
@@ -708,12 +715,15 @@ export function createPatchFunction (backend) {
 
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
+      /*oldVnode未定义的时候，其实也就是root节点，创建一个新的节点*/
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
+      /*标记旧的VNode是否有nodeType, 是否为真实的dom元素*/
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
+        /*是同一个节点的时候直接修改现有的节点*/
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
         if (isRealElement) {
@@ -721,11 +731,14 @@ export function createPatchFunction (backend) {
           // check if this is server-rendered content and if we can perform
           // a successful hydration.
           if (oldVnode.nodeType === 1 && oldVnode.hasAttribute(SSR_ATTR)) {
+            /*当旧的VNode是服务端渲染的元素，hydrating记为true*/
             oldVnode.removeAttribute(SSR_ATTR)
             hydrating = true
           }
           if (isTrue(hydrating)) {
+            /*需要合并到真实Dom上*/
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
+              /*调用insert钩子*/
               invokeInsertHook(vnode, insertedVnodeQueue, true)
               return oldVnode
             } else if (process.env.NODE_ENV !== 'production') {
@@ -740,10 +753,12 @@ export function createPatchFunction (backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
+          /*如果不是服务端渲染或者合并到真实Dom失败，则创建一个空的VNode节点替换它*/
           oldVnode = emptyNodeAt(oldVnode)
         }
 
         // replacing existing element
+        /*取代现有元素*/
         const oldElm = oldVnode.elm
         const parentElm = nodeOps.parentNode(oldElm)
 
