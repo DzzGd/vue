@@ -20,7 +20,6 @@ import {
   pluckModuleFunction,
   getAndRemoveAttrByRegex
 } from '../helpers'
-import { cloneDeep } from 'lodash'
 
 export const onRE = /^@|^v-on:/
 export const dirRE = process.env.VBIND_PROP_SHORTHAND
@@ -81,7 +80,7 @@ export function parse(
   template: string,
   options: CompilerOptions
 ): ASTElement | void {
-  console.log(window.number++, 'parse template', 'options', cloneDeep(options));
+  
   warn = options.warn || baseWarn
 
   platformIsPreTag = options.isPreTag || no

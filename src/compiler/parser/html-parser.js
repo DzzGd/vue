@@ -55,7 +55,7 @@ function decodeAttr(value, shouldDecodeNewlines) {
 }
 
 export function parseHTML(html, options) {
-  console.log(window.number++, 'parseHTML html:', html);
+  
   const stack = []
 
   //指示系统对输入内容是否包含HTML标记的预期

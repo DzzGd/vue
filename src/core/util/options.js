@@ -20,7 +20,6 @@ import {
   isBuiltInTag,
   isPlainObject
 } from 'shared/util'
-import { cloneDeep } from 'lodash'
 
 /**
  * Option overwriting strategies are functions that handle
@@ -434,7 +433,7 @@ export function mergeOptions(
     const strat = strats[key] || defaultStrat
     options[key] = strat(parent[key], child[key], vm, key)
   }
-  console.log(window.number++, 'mergedOptions', cloneDeep(options));
+  
   return options
 }
 
@@ -471,4 +470,3 @@ export function resolveAsset(
   return res
 }
 
-console.log('strats', strats);

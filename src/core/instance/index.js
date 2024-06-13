@@ -4,11 +4,10 @@ import { renderMixin } from './render'
 import { eventsMixin } from './events'
 import { lifecycleMixin } from './lifecycle'
 import { warn } from '../util/index'
-import { cloneDeep } from 'lodash'
 
 window.number = 1;
 function Vue(options) {
-  console.log(window.number++, `user.options: `, cloneDeep(options));
+  
   if (process.env.NODE_ENV !== 'production' &&
     !(this instanceof Vue)
   ) {

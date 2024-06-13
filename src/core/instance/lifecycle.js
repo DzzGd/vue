@@ -54,7 +54,7 @@ export function initLifecycle(vm: Component) {
   vm._isMounted = false
   vm._isDestroyed = false
   vm._isBeingDestroyed = false
-  console.log(window.number++, 'set vm $parent $root $children $refs');
+
 }
 
 export function lifecycleMixin(Vue: Class<Component>) {
@@ -205,6 +205,7 @@ export function mountComponent(
       }
     }
   }, true /* isRenderWatcher */)
+
   hydrating = false
 
   // manually mounted instance, call mounted on self

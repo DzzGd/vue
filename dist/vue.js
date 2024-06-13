@@ -6,8 +6,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash')) :
   typeof define === 'function' && define.amd ? define(['lodash'], factory) :
-  (global = global || self, global.Vue = factory(global.lodash));
-}(this, function (lodash) { 'use strict';
+  (global = global || self, global.Vue = factory());
+}(this, function () { 'use strict';
 
   /*  */
 
@@ -1000,7 +1000,9 @@
       Object.isExtensible(value) &&
       !value._isVue
     ) {
+
       ob = new Observer(value);
+
     }
     if (asRootData && ob) {
       ob.vmCount++;
@@ -1018,13 +1020,14 @@
     customSetter,
     shallow
   ) {
-    console.log(window.number++, 'defineReactive root obj', obj);
+
 
     // 创建依赖收集实例
     var dep = new Dep();
 
+
     var property = Object.getOwnPropertyDescriptor(obj, key);
-    console.log('property: ', property && property.get);
+
     if (property && property.configurable === false) {
       return
     }
@@ -1044,7 +1047,7 @@
         var value = getter ? getter.call(obj) : val;
         if (Dep.target) {
           dep.depend(); // Dep.target.addDep(dep)
-          
+
           if (childOb) {
             childOb.dep.depend();
             if (Array.isArray(value)) {
@@ -1571,7 +1574,7 @@
       var strat = strats[key] || defaultStrat;
       options[key] = strat(parent[key], child[key], vm, key);
     }
-    console.log(window.number++, 'mergedOptions', lodash.cloneDeep(options));
+    
     return options
   }
 
@@ -1607,8 +1610,6 @@
     }
     return res
   }
-
-  console.log('strats', strats);
 
   /*  */
 
@@ -3955,7 +3956,7 @@
     vm._isMounted = false;
     vm._isDestroyed = false;
     vm._isBeingDestroyed = false;
-    console.log(window.number++, 'set vm $parent $root $children $refs');
+
   }
 
   function lifecycleMixin(Vue) {
@@ -4106,6 +4107,7 @@
         }
       }
     }, true /* isRenderWatcher */);
+
     hydrating = false;
 
     // manually mounted instance, call mounted on self
@@ -4565,6 +4567,7 @@
   Watcher.prototype.update = function update () {
     /* istanbul ignore else */
     if (this.lazy) {
+      // 重置为脏数据, 下次读取重新获取
       this.dirty = true;
     } else if (this.sync) {
       this.run();
@@ -4578,6 +4581,7 @@
    * Will be called by the scheduler.
    */
   Watcher.prototype.run = function run () {
+    debugger;
     if (this.active) {
       var value = this.get();
       if (
@@ -4684,7 +4688,7 @@
     if (!isRoot) {
       toggleObserving(false);
     }
-    console.log(window.number++, 'initProps', 'props', props);
+
 
     var loop = function ( key ) {
       keys.push(key);
@@ -4730,7 +4734,7 @@
     data = vm._data = typeof data === 'function'
       ? getData(data, vm)
       : data || {};
-    console.log(window.number++, 'initData', 'data', data);
+
     if (!isPlainObject(data)) {
       data = {};
       warn(
@@ -4798,7 +4802,7 @@
           vm
         );
       }
-
+      debugger;
       if (!isSSR) {
         // create internal watcher for the computed property.
         watchers[key] = new Watcher(
@@ -4859,6 +4863,7 @@
   function createComputedGetter(key) {
     return function computedGetter() {
       var watcher = this._computedWatchers && this._computedWatchers[key];
+      debugger;
       if (watcher) {
         if (watcher.dirty) {
           watcher.evaluate();
@@ -5107,7 +5112,7 @@
 
   window.number = 1;
   function Vue(options) {
-    console.log(window.number++, "user.options: ", lodash.cloneDeep(options));
+    
     if (!(this instanceof Vue)
     ) {
       warn('Vue is a constructor and should be called with the `new` keyword');
@@ -6586,7 +6591,6 @@
           /*取代现有元素*/
           var oldElm = oldVnode.elm;
           var parentElm = nodeOps.parentNode(oldElm);
-
           // create new node
           createElm(
             vnode,
@@ -9372,7 +9376,7 @@
   }
 
   function parseHTML(html, options) {
-    console.log(window.number++, 'parseHTML html:', html);
+    
     var stack = [];
 
     //指示系统对输入内容是否包含HTML标记的预期
@@ -9697,7 +9701,7 @@
     template,
     options
   ) {
-    console.log(window.number++, 'parse template', 'options', lodash.cloneDeep(options));
+    
     warn$2 = options.warn || baseWarn;
 
     platformIsPreTag = options.isPreTag || no;
@@ -11037,7 +11041,7 @@
 
 
 
-  var CodegenState = function CodegenState (options) {
+  var CodegenState = function CodegenState(options) {
     this.options = options;
     this.warn = options.warn || baseWarn;
     this.transforms = pluckModuleFunction(options.modules, 'transformCode');
@@ -11052,13 +11056,13 @@
 
 
 
-  function generate (
+  function generate(
     ast,
     options
   ) {
     var state = new CodegenState(options);
     // fix #11483, Root level <script> tags should not be rendered.
-    console.log('ast: ', ast);
+
     var code = ast ? (ast.tag === 'script' ? 'null' : genElement(ast, state)) : '_c("div")';
     return {
       render: ("with(this){return " + code + "}"),
@@ -11066,7 +11070,7 @@
     }
   }
 
-  function genElement (el, state) {
+  function genElement(el, state) {
     if (el.parent) {
       el.pre = el.pre || el.parent.pre;
     }
@@ -11106,7 +11110,7 @@
   }
 
   // hoist static sub-trees out
-  function genStatic (el, state) {
+  function genStatic(el, state) {
     el.staticProcessed = true;
     // Some elements (templates) need to behave differently inside of a v-pre
     // node.  All pre nodes are static roots, so we can use this as a location to
@@ -11121,7 +11125,7 @@
   }
 
   // v-once
-  function genOnce (el, state) {
+  function genOnce(el, state) {
     el.onceProcessed = true;
     if (el.if && !el.ifProcessed) {
       return genIf(el, state)
@@ -11148,7 +11152,7 @@
     }
   }
 
-  function genIf (
+  function genIf(
     el,
     state,
     altGen,
@@ -11158,7 +11162,7 @@
     return genIfConditions(el.ifConditions.slice(), state, altGen, altEmpty)
   }
 
-  function genIfConditions (
+  function genIfConditions(
     conditions,
     state,
     altGen,
@@ -11176,7 +11180,7 @@
     }
 
     // v-if with v-once should generate code like (a)?_m(0):_m(1)
-    function genTernaryExp (el) {
+    function genTernaryExp(el) {
       return altGen
         ? altGen(el, state)
         : el.once
@@ -11185,7 +11189,7 @@
     }
   }
 
-  function genFor (
+  function genFor(
     el,
     state,
     altGen,
@@ -11213,11 +11217,11 @@
     el.forProcessed = true; // avoid recursion
     return (altHelper || '_l') + "((" + exp + ")," +
       "function(" + alias + iterator1 + iterator2 + "){" +
-        "return " + ((altGen || genElement)(el, state)) +
+      "return " + ((altGen || genElement)(el, state)) +
       '})'
   }
 
-  function genData$2 (el, state) {
+  function genData$2(el, state) {
     var data = '{';
 
     // directives first.
@@ -11301,7 +11305,7 @@
     return data
   }
 
-  function genDirectives (el, state) {
+  function genDirectives(el, state) {
     var dirs = el.directives;
     if (!dirs) { return }
     var res = 'directives:[';
@@ -11326,7 +11330,7 @@
     }
   }
 
-  function genInlineTemplate (el, state) {
+  function genInlineTemplate(el, state) {
     var ast = el.children[0];
     if (el.children.length !== 1 || ast.type !== 1) {
       state.warn(
@@ -11340,7 +11344,7 @@
     }
   }
 
-  function genScopedSlots (
+  function genScopedSlots(
     el,
     slots,
     state
@@ -11397,13 +11401,13 @@
   function hash(str) {
     var hash = 5381;
     var i = str.length;
-    while(i) {
+    while (i) {
       hash = (hash * 33) ^ str.charCodeAt(--i);
     }
     return hash >>> 0
   }
 
-  function containsSlotChild (el) {
+  function containsSlotChild(el) {
     if (el.type === 1) {
       if (el.tag === 'slot') {
         return true
@@ -11413,7 +11417,7 @@
     return false
   }
 
-  function genScopedSlot (
+  function genScopedSlot(
     el,
     state
   ) {
@@ -11438,7 +11442,7 @@
     return ("{key:" + (el.slotTarget || "\"default\"") + ",fn:" + fn + reverseProxy + "}")
   }
 
-  function genChildren (
+  function genChildren(
     el,
     state,
     checkSkip,
@@ -11471,7 +11475,7 @@
   // 0: no normalization needed
   // 1: simple normalization needed (possible 1-level deep nested array)
   // 2: full normalization needed
-  function getNormalizationType (
+  function getNormalizationType(
     children,
     maybeComponent
   ) {
@@ -11482,23 +11486,23 @@
         continue
       }
       if (needsNormalization(el) ||
-          (el.ifConditions && el.ifConditions.some(function (c) { return needsNormalization(c.block); }))) {
+        (el.ifConditions && el.ifConditions.some(function (c) { return needsNormalization(c.block); }))) {
         res = 2;
         break
       }
       if (maybeComponent(el) ||
-          (el.ifConditions && el.ifConditions.some(function (c) { return maybeComponent(c.block); }))) {
+        (el.ifConditions && el.ifConditions.some(function (c) { return maybeComponent(c.block); }))) {
         res = 1;
       }
     }
     return res
   }
 
-  function needsNormalization (el) {
+  function needsNormalization(el) {
     return el.for !== undefined || el.tag === 'template' || el.tag === 'slot'
   }
 
-  function genNode (node, state) {
+  function genNode(node, state) {
     if (node.type === 1) {
       return genElement(node, state)
     } else if (node.type === 3 && node.isComment) {
@@ -11508,27 +11512,27 @@
     }
   }
 
-  function genText (text) {
+  function genText(text) {
     return ("_v(" + (text.type === 2
       ? text.expression // no need for () because already wrapped in _s()
       : transformSpecialNewlines(JSON.stringify(text.text))) + ")")
   }
 
-  function genComment (comment) {
+  function genComment(comment) {
     return ("_e(" + (JSON.stringify(comment.text)) + ")")
   }
 
-  function genSlot (el, state) {
+  function genSlot(el, state) {
     var slotName = el.slotName || '"default"';
     var children = genChildren(el, state);
     var res = "_t(" + slotName + (children ? (",function(){return " + children + "}") : '');
     var attrs = el.attrs || el.dynamicAttrs
       ? genProps((el.attrs || []).concat(el.dynamicAttrs || []).map(function (attr) { return ({
-          // slot props are camelized
-          name: camelize(attr.name),
-          value: attr.value,
-          dynamic: attr.dynamic
-        }); }))
+        // slot props are camelized
+        name: camelize(attr.name),
+        value: attr.value,
+        dynamic: attr.dynamic
+      }); }))
       : null;
     var bind$$1 = el.attrsMap['v-bind'];
     if ((attrs || bind$$1) && !children) {
@@ -11544,7 +11548,7 @@
   }
 
   // componentName is el.component, take it as argument to shun flow's pessimistic refinement
-  function genComponent (
+  function genComponent(
     componentName,
     el,
     state
@@ -11553,7 +11557,7 @@
     return ("_c(" + componentName + "," + (genData$2(el, state)) + (children ? ("," + children) : '') + ")")
   }
 
-  function genProps (props) {
+  function genProps(props) {
     var staticProps = "";
     var dynamicProps = "";
     for (var i = 0; i < props.length; i++) {
@@ -11574,7 +11578,7 @@
   }
 
   // #3895, #4268
-  function transformSpecialNewlines (text) {
+  function transformSpecialNewlines(text) {
     return text
       .replace(/\u2028/g, '\\u2028')
       .replace(/\u2029/g, '\\u2029')
@@ -11782,7 +11786,7 @@
       options,
       vm
     ) {
-      console.log(window.number++, 'compileToFunctions options', lodash.cloneDeep(options));
+      
       options = extend({}, options);
       var warn$$1 = options.warn || warn;
       delete options.warn;
@@ -11890,7 +11894,7 @@
         template,
         options
       ) {
-        console.log(window.number++, 'createCompiler', 'baseOptions', lodash.cloneDeep(baseOptions));
+        
         var finalOptions = Object.create(baseOptions);
         var errors = [];
         var tips = [];
@@ -11967,7 +11971,7 @@
     template,
     options
   ) {
-    console.log(window.number++, 'baseCompile ', 'options:', options);
+    
     var ast = parse(template.trim(), options);
     if (options.optimize !== false) {
       optimize(ast, options);
@@ -12066,9 +12070,9 @@
         var render = ref.render;
         var staticRenderFns = ref.staticRenderFns;
         options.render = render;
-        console.log('render: ', render);
+
         options.staticRenderFns = staticRenderFns;
-        console.log('staticRenderFns: ', staticRenderFns);
+
 
         /* istanbul ignore if */
         if (config.performance && mark) {
@@ -12084,7 +12088,7 @@
    * Get outerHTML of elements, taking care
    * of SVG elements in IE as well.
    */
-  function getOuterHTML (el) {
+  function getOuterHTML(el) {
     if (el.outerHTML) {
       return el.outerHTML
     } else {

@@ -72,7 +72,7 @@ function initProps(vm: Component, propsOptions: Object) {
   if (!isRoot) {
     toggleObserving(false)
   }
-  console.log(window.number++, 'initProps', 'props', props);
+
 
   for (const key in propsOptions) {
     keys.push(key)
@@ -118,7 +118,7 @@ function initData(vm: Component) {
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {}
-  console.log(window.number++, 'initData', 'data', data);
+
   if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -186,7 +186,6 @@ function initComputed(vm: Component, computed: Object) {
         vm
       )
     }
-
     if (!isSSR) {
       // create internal watcher for the computed property.
       watchers[key] = new Watcher(
@@ -253,6 +252,7 @@ function createComputedGetter(key) {
         watcher.evaluate()
       }
       if (Dep.target) {
+        // 假如视图上没有引用 data 中的数据,而是引用了 computed 中的数据, 那么data中的数据改变时 视图是不会更新的, 因此这里需要收集依赖 [渲染Watcher]
         watcher.depend()
       }
       return watcher.value

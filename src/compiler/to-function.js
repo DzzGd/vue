@@ -3,7 +3,6 @@
 import { noop, extend } from 'shared/util'
 import { warn as baseWarn, tip } from 'core/util/debug'
 import { generateCodeFrame } from './codeframe'
-import { cloneDeep } from 'lodash';
 
 type CompiledFunctionResult = {
   render: Function;
@@ -27,7 +26,7 @@ export function createCompileToFunctionFn(compile: Function): Function {
     options?: CompilerOptions,
     vm?: Component
   ): CompiledFunctionResult {
-    console.log(window.number++, 'compileToFunctions options', cloneDeep(options));
+    
     options = extend({}, options)
     const warn = options.warn || baseWarn
     delete options.warn

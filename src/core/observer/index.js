@@ -121,7 +121,9 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
     Object.isExtensible(value) &&
     !value._isVue
   ) {
+
     ob = new Observer(value)
+
   }
   if (asRootData && ob) {
     ob.vmCount++
@@ -139,13 +141,14 @@ export function defineReactive(
   customSetter?: ?Function,
   shallow?: boolean
 ) {
-  console.log(window.number++, 'defineReactive root obj', obj);
+
 
   // 创建依赖收集实例
   const dep = new Dep()
 
+
   const property = Object.getOwnPropertyDescriptor(obj, key)
-  console.log('property: ', property && property.get);
+
   if (property && property.configurable === false) {
     return
   }
@@ -165,7 +168,7 @@ export function defineReactive(
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
         dep.depend() // Dep.target.addDep(dep)
-        
+
         if (childOb) {
           childOb.dep.depend()
           if (Array.isArray(value)) {

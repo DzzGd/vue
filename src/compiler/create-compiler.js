@@ -3,7 +3,6 @@
 import { extend } from 'shared/util'
 import { detectErrors } from './error-detector'
 import { createCompileToFunctionFn } from './to-function'
-import { cloneDeep } from 'lodash';
 
 /**
  * 编译器构建函数的构建器
@@ -18,7 +17,7 @@ export function createCompilerCreator(baseCompile: Function): Function {
       template: string,
       options?: CompilerOptions
     ): CompiledResult {
-      console.log(window.number++, 'createCompiler', 'baseOptions', cloneDeep(baseOptions));
+      
       const finalOptions = Object.create(baseOptions)
       const errors = []
       const tips = []

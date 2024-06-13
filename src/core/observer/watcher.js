@@ -31,8 +31,14 @@ export default class Watcher {
   id: number;
   deep: boolean;
   user: boolean;
+  /**
+   * lazy 是 true，说明它的值是惰性计算的，只有到真正在模板里去读取它的值后才会计算。
+   */
   lazy: boolean;
   sync: boolean;
+  /**
+   * 首先 dirty 这个概念代表脏数据，说明这个数据需要重新调用用户传入的 函数来求值了
+   */
   dirty: boolean;
   active: boolean;
   deps: Array<Dep>;
@@ -165,6 +171,7 @@ export default class Watcher {
   update() {
     /* istanbul ignore else */
     if (this.lazy) {
+      // 重置为脏数据, 下次读取重新获取
       this.dirty = true
     } else if (this.sync) {
       this.run()

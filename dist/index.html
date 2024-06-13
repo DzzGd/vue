@@ -3160,9 +3160,9 @@
   </div>
   <div id="root-app">
     <span>{{message}}</span>
+    <span>{{splitedMessage}}</span>
+    <demo-grid />
   </div>
-  <!-- <demo-grid></demo-grid> -->
-  <!-- <input type="text" v-model="message"> -->
 
   <script>
     Vue.component('demo-grid', {
@@ -3172,15 +3172,22 @@
       data: function () {
 
         return {
-          message: 'hello world2'
+          message: 'demo-grid'
         }
       },
     })
+
     const vue = new Vue({
       el: '#root-app',
       data: (vm) => {
         return {
           message: 'hello world'
+        }
+      },
+      computed: {
+        splitedMessage() {
+          debugger;
+          return this.message.split('').join(',')
         }
       },
       methods: {
@@ -3189,6 +3196,8 @@
         }
       },
     })
+    window.vue = vue;
+
   </script>
 </body>
 

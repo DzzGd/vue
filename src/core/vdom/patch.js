@@ -761,7 +761,6 @@ export function createPatchFunction (backend) {
         /*取代现有元素*/
         const oldElm = oldVnode.elm
         const parentElm = nodeOps.parentNode(oldElm)
-
         // create new node
         createElm(
           vnode,
